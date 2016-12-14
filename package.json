@@ -40,6 +40,7 @@
     "fis3-preprocessor-replacer": "^0.1.0",
     "fisx-preprocessor-amd": "^0.1.1",
     "fisx-preprocessor-babel": "^0.1.0",
+    "fisx-prepackager-babel": "^0.1.0",
     "fisx-parser-vue": "^0.1.0",
     "fisx-vue-loader": "^0.1.0",
     "stylus": "^0.54.5",

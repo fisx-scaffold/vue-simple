@@ -43,7 +43,6 @@ fis.match('/src/(**.vue)', {
     isJsLike: true,
     relative: true,
     useMap: true,
-    sourceMap: true,
     parser: fis.plugin('vue', {
         isProduction: isProduction,
         sourceMap: !isProduction,
