@@ -42,7 +42,6 @@
     "fisx-preprocessor-babel": "^0.1.0",
     "fisx-parser-vue": "^0.1.0",
     "fisx-vue-loader": "^0.1.0",
-    "html-minifier": "^3.2.3",
     "stylus": "^0.54.5",
     "rider": "^2.0.0",
     "autoprefixer-stylus": "^0.11.0",
