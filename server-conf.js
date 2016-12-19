@@ -81,8 +81,7 @@ exports.getLocations = function () {
             location: /\/$/,
             handler: [
                 home('index.html'),
-                requireInjector,
-                livereload()
+                requireInjector
             ]
         },
         {
