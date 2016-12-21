@@ -126,7 +126,6 @@ exports.injectRes = function (res) {
 
 // disable watchreload setting false
 exports.watchreload = {
-    debug: true,
     hmr: true,
     logLevel: 'debug',
     fileTypes: {
