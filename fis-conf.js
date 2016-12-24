@@ -45,7 +45,7 @@ fis.match('/src/(**.vue)', {
     useMap: true,
     parser: fis.plugin('vue', {
         isProduction: isProduction,
-        sourceMap: !isProduction,
+        sourceMap: false,
         script: {
             lang: 'babel',
             speed: true
@@ -62,7 +62,7 @@ fis.require('parser-babel6').parser = babel;
 fis.match('/src/(**.js)', {
     parser: fis.plugin('babel6', {
         speed: true,
-        sourceMaps: !isProduction ? 'inline' : false
+        sourceMaps: false
     }),
     preprocessor: [
         fis.plugin('babel'),
