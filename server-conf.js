@@ -36,9 +36,10 @@ exports.getLocations = function () {
     var vueLoader = require('fisx-vue-loader');
     var stylusParser = require('stylus');
 
-    var babelHandlers = babelProcessor();
+    var babelHandlers = babelProcessor({
+        // sourceMap: false
+    });
     var vueHandlers = vueProcessor({
-        sourceMap: true,
         parser: {
             babel: require('babel-core'),
             stylus: [
@@ -47,6 +48,7 @@ exports.getLocations = function () {
             ]
         },
         vue: {
+            // sourceMap: false,
             script: {
                 lang: 'babel'
             }
@@ -74,8 +76,7 @@ exports.getLocations = function () {
         {
             location: /\/$/,
             handler: [
-                home('index.html'),
-                requireInjector
+                home('index.html')
             ]
         },
         {
