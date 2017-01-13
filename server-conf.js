@@ -58,19 +58,14 @@ exports.getLocations = function () {
         defaultSrcHandler: babelHandlers.processESFile
     });
 
-    var requireInjector = requireConfigInjector({
-        requireConfig: {
-            paths: vueHandlers.getCustomPathMap()
-        }
-    });
+    var requireInjector = requireConfigInjector();
 
     var customHandlers = fis.serveRelease ? [vueHandlers.hotReloadApi] : [
         vueHandlers.vuePkg,
-        vueHandlers.insertCss,
         vueHandlers.hotReloadApi,
-
         babelHandlers.babelHelper,
-        vueHandlers.vue
+        vueHandlers.vue,
+        babelHandlers.babel
     ];
 
     return [].concat(
