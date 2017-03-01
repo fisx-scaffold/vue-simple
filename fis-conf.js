@@ -6,11 +6,10 @@
 var pageFiles = ['index.html'];
 var isProduction = fis.isProduction();
 
+// 这样可以直接忽略未依赖的文件处理，最后只输出依赖的文件
 fis.addIgnoreFiles([
-    '/dep/vue/src/**',
-    '/dep/vue/types/**',
-    '/dep/vue/dist/vue.js',
-    '/dep/vue/dist/*.min.js'
+    '/dep/**',
+    '/dep/*'
 ]);
 
 // 初始化要编译的样式文件: 只处理页面引用的样式文件
@@ -27,6 +26,10 @@ fis.match('index.html', {
 
 // 启用 amd 模块编译
 fis.hook('amd', {
+    // 声明动态模块 id：构建打包过程中动态创建的模块
+    dynamic: [
+        'babelHelpers'
+    ],
     config: fis.getModuleConfig()
 });
 
