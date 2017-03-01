@@ -30,6 +30,10 @@ fis.hook('amd', {
     dynamic: [
         'babelHelpers'
     ],
+    // 外部模块 id 信息
+    externals: [
+        /vue\-hot\-reload\-api$/
+    ],
     config: fis.getModuleConfig()
 });
 
