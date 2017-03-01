@@ -54,8 +54,7 @@ exports.getLocations = function () {
                 lang: 'babel'
             }
         },
-        vueLoader: vueLoader,
-        defaultSrcHandler: babelHandlers.processESFile
+        vueLoader: vueLoader
     });
 
     var requireInjector = requireConfigInjector();
