@@ -115,13 +115,9 @@ fis.match('::package', {
         page: {
             files: pageFiles,
             // 打包页面异步入口模块
-            packAsync: true
-        },
-        bundles: [
-            {
-                files: [/\/src\/.*\-vue\-part.*\.css/],
-                target: 'src/main.styl'
-            }
-        ]
+            packAsync: true,
+            // 打包页面模块依赖的样式，默认打包到页面引用的样式文件里
+            packDepStyle: true
+        }
     })
 });
