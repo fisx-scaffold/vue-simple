@@ -28,6 +28,7 @@
 /* global autoresponse:false */
 /* global vueProcessor:false */
 /* global babelProcessor:false */
+/* global envifyProcessor:false */
 
 exports.port = 8848;
 exports.directoryIndexes = true;
@@ -38,7 +39,10 @@ exports.getLocations = function () {
     var stylusParser = require('stylus');
 
     var babelHandlers = babelProcessor({
-        // sourceMap: false
+        // sourceMap: false,
+        // requireCss: {
+        //     inline: true
+        // }
     });
     var vueHandlers = vueProcessor({
         parser: {
@@ -94,12 +98,35 @@ exports.getLocations = function () {
 
         customHandlers,
 
+        {
+            path: /\/dep\/.*\.js$/,
+            handler: [
+                file(),
+                envifyProcessor,
+                cjs2amd.create({
+                    resolveRequire: true
+                })
+            ]
+        },
+
         // 添加 mock 处理器
         autoresponse('edp', {
             logLevel: 'debug',
             root: __dirname,
             handlers: requireInjector,
-            post: true
+            post: true,
+            get: {
+                match: function (reqPathName) { // mock all `/xx/xx` path
+                    if (reqPathName.indexOf('socket.io') !== -1) {
+                        return false;
+                    }
+                    return !/\.\w+(\?.*)?$/.test(reqPathName);
+                },
+                mock: function (reqURL) {
+                    var path = reqURL.pathname.replace(/^\/+/, '') || 'index';
+                    return path + '.js';
+                }
+            }
         }),
 
         {
@@ -127,5 +154,9 @@ exports.watchreload = {
     logLevel: 'debug',
     fileTypes: {
         script: 'js,vue'
-    }
+    } // ,
+    // files: [
+    //     'src/**/*',
+    //     'templates/**/*.tpl'
+    // ]
 };

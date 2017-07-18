@@ -15,6 +15,7 @@
   "license": "BSD",
   "${#manifestKey#}": {
     "requireConfig": {
+      "waitSeconds": 5,
       "baseUrl": "src",
       "paths": {
         "babelHelpers": "babelHelpers"
@@ -45,7 +46,7 @@
     "fisx-vue-loader": "^0.1.0",
     "stylus": "^0.54.5",
     "rider": "^2.0.0",
-    "autoprefixer-stylus": "^0.11.0",
+    "autoprefixer-stylus": "^0.13.0",
     "qrequire": "^0.2.0"
   },
   "babel": {

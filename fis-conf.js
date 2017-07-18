@@ -12,8 +12,13 @@ fis.addIgnoreFiles([
     '/dep/*'
 ]);
 
+// 引用项目依赖定义的 stylus
+var stylusOpts = require('./tool/stylus')();
+var stylusParser = require('stylus');
+fis.require('parser-stylus').parser = stylusParser;
+
 // 初始化要编译的样式文件: 只处理页面引用的样式文件
-fis.initProcessStyleFiles(pageFiles, require('./tool/stylus')());
+fis.initProcessStyleFiles(pageFiles, stylusOpts);
 
 // 启用相对路径
 fis.match('index.html', {
@@ -26,23 +31,30 @@ fis.match('index.html', {
 
 // 启用 amd 模块编译
 fis.hook('amd', {
+    // 如果使用了动态渲染模板，模板入口模块解析需要自行实现，可以按如下提供
+    // 方式直接基于正则提取
+    // parseScript: function (content, info) {
+    //     if (!info.isInline || !/\.tpl$/.test(info.subpath)) {
+    //         return;
+    //     }
+    //     // 提取模板的异步模块信息
+    //     return {
+    //         asynDeps: fis.util.extractAsyncModuleIds(content)
+    //     };
+    // },
     // 声明动态模块 id：构建打包过程中动态创建的模块
     dynamic: [
         'babelHelpers'
     ],
-    // 外部模块 id 信息
-    externals: [
-        /vue\-hot\-reload\-api$/
-    ],
     config: fis.getModuleConfig()
 });
 
-var babel = require('babel-core');
-
 // 编译 vue 文件
+var babel = require('babel-core');
 var vueLoader = require('fisx-vue-loader');
 vueLoader.registerParser({
-    babel: babel
+    babel: babel,
+    stylus: [stylusParser, stylusOpts]
 });
 fis.require('parser-vue').parser = vueLoader;
 fis.match('/src/(**.vue)', {
@@ -51,7 +63,7 @@ fis.match('/src/(**.vue)', {
     relative: true,
     useMap: true,
     parser: fis.plugin('vue', {
-        isProduction: isProduction,
+        isProduction: true,
         sourceMap: false,
         script: {
             lang: 'babel',
@@ -60,7 +72,10 @@ fis.match('/src/(**.vue)', {
     }),
     preprocessor: [
         fis.plugin('babel'), // extract babel helper api
-        fis.plugin('amd') // convert commonjs to amd
+        fis.plugin('amd', {  // convert commonjs to amd
+            // remove css require declaration in js module
+            clearCssRequire: true
+        })
     ]
 });
 
@@ -73,36 +88,23 @@ fis.match('/src/(**.js)', {
     }),
     preprocessor: [
         fis.plugin('babel'),
-        fis.plugin('amd')
+        fis.plugin('amd', {
+            clearCssRequire: true
+        })
     ]
 });
 
-// convert dist vue js to amd
-fis.match('/dep/vue/dist/**.js', {
+// process dep module: amd normalize
+fis.match('/dep/**.js', {
     preprocessor: [
-        fis.plugin('replacer', {
-            from: /process\.env\.NODE_ENV/g,
-            to: '\'' + (fis.isProduction() ? 'production' : 'development') + '\''
+        fis.plugin('amd', {
+            resolveRequire: true
         }),
-        fis.plugin('amd')
+        fis.plugin('replacer', {
+            envify: true,
+            isProd: isProduction
+        })
     ]
-});
-
-// compress vue component in production env
-fis.media('prod').match('/src/**.vue', {
-    optimizer: fis.plugin('uglify-js')
-}).match(/\/src\/.*\-vue\-part.*\.css/, {
-    optimizer: fis.plugin('css-compressor')
-});
-
-// 由于从原有文件派生出来的文件，哪怕最后会打包到其它文件，但也会被认为是引用了不发布的文件
-// 这里在处理结束设置为不允许发布，绕过这个问题。
-fis.on('process:end', function (file) {
-    file.derived.forEach(function (item) {
-        if (/\/src\/.*\-vue\-part.*\.css/.test(item.subpath)) {
-            item.release = false;
-        }
-    });
 });
 
 // 启用打包插件
@@ -117,7 +119,9 @@ fis.match('::package', {
             // 打包页面异步入口模块
             packAsync: true,
             // 打包页面模块依赖的样式，默认打包到页面引用的样式文件里
-            packDepStyle: true
+            packDepStyle: true,
+            // 按页面提取第三方依赖的模块打包成一个文件
+            extractVendor: true
         }
     })
 });
